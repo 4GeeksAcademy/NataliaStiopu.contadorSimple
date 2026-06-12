@@ -1,28 +1,39 @@
-import React from "react";
+import React, { useState } from "react";
+import SecondCounter from "./SecondCounter";
 
-//include images into your bundle
-import rigoImage from "../../img/rigo-baby.jpg";
+function Home() {
+    const [seconds, setSeconds] = useState(0);
+    const [running, setRunning] = useState(true);
 
-//create your first component
-const Home = () => {
-	return (
-		<div className="text-center">
-            
+    React.useEffect(function () {
+        let interval = null;
 
-			<h1 className="text-center mt-5">Hello Rigo!</h1>
-			<p>
-				<img src={rigoImage} />
-			</p>
-			<a href="#" className="btn btn-success">
-				If you see this green button... bootstrap is working...
-			</a>
-			<p>
-				Made by{" "}
-				<a href="http://www.4geeksacademy.com">4Geeks Academy</a>, with
-				love!
-			</p>
-		</div>
-	);
-};
+        if (running) {
+            interval = setInterval(function () {
+                setSeconds(function (prev) {
+                    return prev + 1;
+                });
+            }, 1000);
+        }
+
+        return function () {
+            clearInterval(interval);
+        };
+    }, [running]);
+
+    return (
+         <div className="text-center pt-5 mt-5">
+        <div className="mb-5">
+            <SecondCounter seconds={seconds} />
+        </div>
+
+        <div>
+            <button className="btn btn-danger mx-2" onClick={() => setRunning(false)}>Stop</button>
+            <button className="btn btn-success mx-2" onClick={() => setRunning(true)}>Play</button>
+            <button className="btn btn-warning mx-2" onClick={() => setSeconds(0)}>Reset</button>
+        </div>
+    </div>
+    );
+}
 
 export default Home;
