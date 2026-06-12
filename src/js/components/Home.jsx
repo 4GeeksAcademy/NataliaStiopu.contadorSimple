@@ -3,8 +3,9 @@ import SecondCounter from "./SecondCounter";
 
 function Home() {
     const [seconds, setSeconds] = useState(0);
-    const [running, setRunning] = useState(false);
+    const [running, setRunning] = useState(true);
     const [inputValue, setInputValue] = useState("");
+    const [mode, setMode] = useState("up"); 
 
     useEffect(function () {
         let interval = null;
@@ -12,11 +13,15 @@ function Home() {
         if (running) {
             interval = setInterval(function () {
                 setSeconds(function (prev) {
-                    if (prev <= 0) {
-                        setRunning(false);
-                        return 0;
+                    if (mode === "down") {
+                        if (prev <= 0) {
+                            setRunning(false);
+                            return 0;
+                        }
+                        return prev - 1;
                     }
-                    return prev - 1;
+
+                    return prev + 1;
                 });
             }, 1000);
         }
@@ -24,7 +29,7 @@ function Home() {
         return function () {
             clearInterval(interval);
         };
-    }, [running]);
+    }, [running, mode]);
 
     function startCountdown() {
         let value = parseInt(inputValue);
@@ -34,21 +39,25 @@ function Home() {
             return;
         }
 
+        setMode("down");
         setSeconds(value);
+        setRunning(true);
+    }
+
+    function startNormal() {
+        setMode("up");
         setRunning(true);
     }
 
     return (
         <div className="text-center pt-5 mt-5">
-            <div className="mb-5">
-                <SecondCounter seconds={seconds} />
-            </div>
+            <SecondCounter seconds={seconds} />
 
             <div className="mt-4">
                 <input
                     type="number"
                     className="form-control w-25 mx-auto"
-                    placeholder="Escribe un número"
+                    placeholder="Countdown number"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                 />
@@ -58,13 +67,15 @@ function Home() {
                 </button>
             </div>
 
+            <div className="mt-3">
+                <button className="btn btn-success" onClick={startNormal}>
+                    Start normal counter
+                </button>
+            </div>
+
             <div className="mt-4">
                 <button className="btn btn-danger mx-2" onClick={() => setRunning(false)}>
                     Stop
-                </button>
-
-                <button className="btn btn-success mx-2" onClick={() => setRunning(true)}>
-                    Play
                 </button>
 
                 <button className="btn btn-warning mx-2" onClick={() => setSeconds(0)}>
